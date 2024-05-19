@@ -2,6 +2,7 @@
 
 namespace MissaelAnda\Whatsapp\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use MissaelAnda\Whatsapp\Http\Middleware\VerifyWebhookSignature;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -76,6 +77,7 @@ class WebhookController extends Controller
             UnprocessableWebhookPayload::dispatch($e);
         }
 
+        Log::debug("sent 200 response");
         return new Response;
     }
 
