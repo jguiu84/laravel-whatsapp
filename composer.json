@@ -27,7 +27,8 @@
         "illuminate/support": "^9.0 || ^10.0",
         "illuminate/http": "^9.0 || ^10.0",
         "illuminate/routing": "^9.0 || ^10.0",
-        "illuminate/events": "^9.0 || ^10.0"
+        "illuminate/events": "^9.0 || ^10.0",
+        "ext-curl": "*"
     },
     "extra": {
         "laravel": {

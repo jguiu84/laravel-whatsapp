@@ -2,6 +2,7 @@
 
 namespace MissaelAnda\Whatsapp;
 
+use CURLFile;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
@@ -114,7 +115,7 @@ class Whatsapp
             throw new FileNotFoundException("The file $file doesn't exists.");
         }
 
-        $response = $this->request()
+        /*$response = $this->request()
             ->attach(
                 'file',
                 $type === null ? Storage::get($file) : $file,
@@ -129,7 +130,37 @@ class Whatsapp
             throw new MessageRequestException($response);
         }
 
-        $id = $response->json('id');
+        $id = $response->json('id');*/
+
+        $curl = curl_init();
+
+        curl_setopt_array(
+            $curl,
+            array(
+                CURLOPT_URL => $this->buildApiEndpoint('media'),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'file' => new CURLFile($file, $type),
+                    'type' => $type,
+                    'messaging_product' => 'whatsapp'
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Bearer ' . $this->token
+                ),
+            )
+        );
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $id = json_decode($response)->id;
 
         if ($retrieveAllData) {
             return $this->getMedia($id);
